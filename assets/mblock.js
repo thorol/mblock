@@ -3089,6 +3089,7 @@ $(document).on('submit', 'form', function(e) {
                                 // This fixes the issue where empty blocks save <p><br data-cke-filler="true"></p>
                                 data = data.replace(/<p><br data-cke-filler="true" ?\/?><\/p>/gi, '');
                                 data = data.replace(/<br data-cke-filler="true" ?\/?>/gi, '');
+                                data = data.replace(/<p class="ck-placeholder" data-placeholder="[^"]+"><\/p>/gi, '');
                                 
                                 // Step 1: Remove ck-list-bogus-paragraph spans
                                 data = data.replace(/<span class="ck-list-bogus-paragraph">(.*?)<\/span>/gi, '$1');
@@ -3175,6 +3176,7 @@ $(document).on('submit', 'form', function(e) {
                     // Step 0: Remove CKEditor filler content
                     value = value.replace(/<p><br data-cke-filler="true" ?\/?><\/p>/gi, '');
                     value = value.replace(/<br data-cke-filler="true" ?\/?>/gi, '');
+                    value = value.replace(/<p class="ck-placeholder" data-placeholder="[^"]+"><\/p>/gi, '');
                     
                     // Remove ck-list-bogus-paragraph spans
                     value = value.replace(/<span class="ck-list-bogus-paragraph">(.*?)<\/span>/gi, '$1');
