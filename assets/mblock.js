@@ -3085,6 +3085,11 @@ $(document).on('submit', 'form', function(e) {
                             let data = editor.getData();
                             
                             if (data && typeof data === 'string') {
+                                // Step 0: Remove CKEditor filler content
+                                // This fixes the issue where empty blocks save <p><br data-cke-filler="true"></p>
+                                data = data.replace(/<p><br data-cke-filler="true" ?\/?><\/p>/gi, '');
+                                data = data.replace(/<br data-cke-filler="true" ?\/?>/gi, '');
+                                
                                 // Step 1: Remove ck-list-bogus-paragraph spans
                                 data = data.replace(/<span class="ck-list-bogus-paragraph">(.*?)<\/span>/gi, '$1');
                                 
@@ -3167,6 +3172,10 @@ $(document).on('submit', 'form', function(e) {
                 let value = $textarea.val();
                 
                 if (value && typeof value === 'string') {
+                    // Step 0: Remove CKEditor filler content
+                    value = value.replace(/<p><br data-cke-filler="true" ?\/?><\/p>/gi, '');
+                    value = value.replace(/<br data-cke-filler="true" ?\/?>/gi, '');
+                    
                     // Remove ck-list-bogus-paragraph spans
                     value = value.replace(/<span class="ck-list-bogus-paragraph">(.*?)<\/span>/gi, '$1');
                     
