@@ -57,6 +57,38 @@ foreach ($tables as $table => $columns) {
         $query = "UPDATE `$table` SET `$col` = REPLACE(`$col`, :filler2, '') WHERE `$col` LIKE :search2";
         $sql->setQuery($query, ['filler2' => $filler2_json, 'search2' => '%data-cke-filler%']);
         if ($sql->getRows() > 0) echo "Updated $table.$col (JSON Variant 2): " . $sql->getRows() . " rows<br>";
+
+        // 3. Regex Replacement for Placeholders (PHP-based because SQL lacks REGEX replace)
+        // Matches: <p class="ck-placeholder" data-placeholder="..."></p>
+        $fetchQuery = "SELECT id, `$col` FROM `$table` WHERE `$col` LIKE '%ck-placeholder%'";
+        // Iterate only over rows that actually match
+        $iterator = rex_sql::factory()->getArray($fetchQuery);
+        $localUpdateCount = 0;
+
+        foreach ($iterator as $row) {
+            $original = $row[$col];
+            $current = $original;
+
+            // Regex for HTML variant
+            $current = preg_replace('/<p class="ck-placeholder" data-placeholder="[^"]+"><\/p>/', '', $current);
+            
+            // Regex for JSON escaped variant (need to be careful with backslashes)
+            // Pattern: <p class=\"ck-placeholder\" data-placeholder=\"...\"><\/p>
+            $current = preg_replace('/<p class=\\\\"ck-placeholder\\\\" data-placeholder=\\\\"[^"]+\\\\"><\\\\\/p>/', '', $current);
+            
+            if ($current !== $original) {
+                // Determine ID column name (usually 'id')
+                $idCol = 'id'; 
+                
+                $upd = rex_sql::factory();
+                $upd->setTable($table);
+                $upd->setWhere([$idCol => $row[$idCol]]);
+                $upd->setValue($col, $current);
+                $upd->update();
+                $localUpdateCount++;
+            }
+        }
+        if ($localUpdateCount > 0) echo "Updated $table.$col (Placeholders via PHP Regex): " . $localUpdateCount . " rows<br>";
     }
 }
 
