@@ -3085,6 +3085,16 @@ $(document).on('submit', 'form', function(e) {
                             let data = editor.getData();
                             
                             if (data && typeof data === 'string') {
+                                // Step 0: Remove CKEditor filler content
+                                // This fixes the issue where empty blocks save <p><br data-cke-filler="true"></p>
+                                data = data.replace(/<p><br data-cke-filler="true" ?\/?><\/p>/gi, '');
+                                data = data.replace(/<br data-cke-filler="true" ?\/?>/gi, '');
+                                data = data.replace(/<p class="ck-placeholder" data-placeholder="[^"]+"><\/p>/gi, '');
+                                
+                                // Step 0.1: Remove empty paragraphs that might result from the above
+                                data = data.replace(/<p>&nbsp;<\/p>/gi, '');
+                                data = data.replace(/^(\s*<p>\s*<br\s*\/?>\s*<\/p>\s*)*$/i, '');
+                                
                                 // Step 1: Remove ck-list-bogus-paragraph spans
                                 data = data.replace(/<span class="ck-list-bogus-paragraph">(.*?)<\/span>/gi, '$1');
                                 
@@ -3167,6 +3177,15 @@ $(document).on('submit', 'form', function(e) {
                 let value = $textarea.val();
                 
                 if (value && typeof value === 'string') {
+                    // Step 0: Remove CKEditor filler content
+                    value = value.replace(/<p><br data-cke-filler="true" ?\/?><\/p>/gi, '');
+                    value = value.replace(/<br data-cke-filler="true" ?\/?>/gi, '');
+                    value = value.replace(/<p class="ck-placeholder" data-placeholder="[^"]+"><\/p>/gi, '');
+                    
+                    // Step 0.1: Remove empty paragraphs that might result from the above
+                    value = value.replace(/<p>&nbsp;<\/p>/gi, '');
+                    value = value.replace(/^(\s*<p>\s*<br\s*\/?>\s*<\/p>\s*)*$/i, '');
+                    
                     // Remove ck-list-bogus-paragraph spans
                     value = value.replace(/<span class="ck-list-bogus-paragraph">(.*?)<\/span>/gi, '$1');
                     

@@ -1,5 +1,10 @@
 # MBlock - REDAXO Addon für Modul-Input-Blöcke
 
+## Version 4.5.5 - 2026-02-15
+
+### Bug Fixes
+* **CKEditor 5 Filler Content**: Added automatic cleanup of replacement content for CKEditor 5 (`<p><br data-cke-filler="true"></p>`) and placeholders (`<p class="ck-placeholder" ...>`) on form submission. This prevents empty blocks from being saved with invisible HTML artifacts.
+
 ## Version 4.5.1 - 2025-11-26
 
 ### Bug Fixes
