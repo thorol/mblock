@@ -3091,6 +3091,10 @@ $(document).on('submit', 'form', function(e) {
                                 data = data.replace(/<br data-cke-filler="true" ?\/?>/gi, '');
                                 data = data.replace(/<p class="ck-placeholder" data-placeholder="[^"]+"><\/p>/gi, '');
                                 
+                                // Step 0.1: Remove empty paragraphs that might result from the above
+                                data = data.replace(/<p>&nbsp;<\/p>/gi, '');
+                                data = data.replace(/^(\s*<p>\s*<br\s*\/?>\s*<\/p>\s*)*$/i, '');
+                                
                                 // Step 1: Remove ck-list-bogus-paragraph spans
                                 data = data.replace(/<span class="ck-list-bogus-paragraph">(.*?)<\/span>/gi, '$1');
                                 
@@ -3177,6 +3181,10 @@ $(document).on('submit', 'form', function(e) {
                     value = value.replace(/<p><br data-cke-filler="true" ?\/?><\/p>/gi, '');
                     value = value.replace(/<br data-cke-filler="true" ?\/?>/gi, '');
                     value = value.replace(/<p class="ck-placeholder" data-placeholder="[^"]+"><\/p>/gi, '');
+                    
+                    // Step 0.1: Remove empty paragraphs that might result from the above
+                    value = value.replace(/<p>&nbsp;<\/p>/gi, '');
+                    value = value.replace(/^(\s*<p>\s*<br\s*\/?>\s*<\/p>\s*)*$/i, '');
                     
                     // Remove ck-list-bogus-paragraph spans
                     value = value.replace(/<span class="ck-list-bogus-paragraph">(.*?)<\/span>/gi, '$1');
