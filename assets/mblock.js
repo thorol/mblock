@@ -1396,7 +1396,20 @@ var MBlockClipboard = {
                 const name = $el.attr('name') || $el.attr('id');
                 
                 if (name) {
-                    if ($el.is(':checkbox') || $el.is(':radio')) {
+                    if ($el.is(':radio')) {
+                        // Radio-Gruppen: alle Radios teilen denselben name.
+                        // Nur den ausgewählten Wert speichern, nicht jedes Radio einzeln überschreiben.
+                        if (!formData[name]) {
+                            formData[name] = {
+                                type: 'radio_group',
+                                checkedValue: null
+                            };
+                        }
+                        // Fallback: auch active-Klasse am Label prüfen (MForm-Bild-/Color-Radios)
+                        if ($el.prop('checked') || $el.closest('label').hasClass('active')) {
+                            formData[name].checkedValue = $el.val();
+                        }
+                    } else if ($el.is(':checkbox')) {
                         formData[name] = {
                             type: 'checkbox_radio',
                             value: $el.val(),
@@ -1678,6 +1691,12 @@ var MBlockClipboard = {
                 
                 // Trigger change events to update any dependent elements
                 pastedItem.find('input, select, textarea').trigger('change');
+                
+                // RADIO FIX: Re-apply radio group states AFTER rex:ready and trigger('change'),
+                // because tab-panel / MForm initialisation may reset the active-class on labels.
+                if (MBlockClipboard.data && MBlockClipboard.data.formData) {
+                    MBlockClipboard.restoreRadioGroups(pastedItem, MBlockClipboard.data.formData);
+                }
             }, 50);
             
             // Scroll to pasted item
@@ -1843,6 +1862,20 @@ var MBlockClipboard = {
                 
                 // Handle different field types
                 switch (fieldData.type) {
+                    case 'radio_group':
+                        // Alle Radios der Gruppe zuerst deselektieren, dann das gespeicherte auswählen.
+                        // Auch active-Klasse am Label aktualisieren (MForm-Bild-/Color-Radios).
+                        $field.prop('checked', false);
+                        $field.closest('label').removeClass('active');
+                        if (fieldData.checkedValue !== null) {
+                            const $checked = $field.filter(function() {
+                                return $(this).val() === fieldData.checkedValue;
+                            });
+                            $checked.prop('checked', true);
+                            $checked.closest('label').addClass('active');
+                        }
+                        break;
+
                     case 'checkbox_radio':
                         $field.val(fieldData.value);
                         $field.prop('checked', fieldData.checked);
@@ -2028,6 +2061,33 @@ var MBlockClipboard = {
         }
     },
     
+    // Stellt nur Radio-Gruppen wieder her – geeignet als zweiter Durchlauf
+    // nach rex:ready / Tab-Initialisierung, die active-Klassen zurücksetzen kann.
+    restoreRadioGroups: function(pastedItem, formData) {
+        try {
+            Object.keys(formData).forEach(originalName => {
+                const fieldData = formData[originalName];
+                if (!fieldData || fieldData.type !== 'radio_group') return;
+                
+                const $field = this.findFieldBySmartMatching(pastedItem, originalName);
+                if (!$field.length) return;
+                
+                $field.prop('checked', false);
+                $field.closest('label').removeClass('active');
+                
+                if (fieldData.checkedValue !== null) {
+                    const $checked = $field.filter(function() {
+                        return $(this).val() === fieldData.checkedValue;
+                    });
+                    $checked.prop('checked', true);
+                    $checked.closest('label').addClass('active');
+                }
+            });
+        } catch (error) {
+            console.error('MBlock: Fehler beim Wiederherstellen der Radio-Gruppen:', error);
+        }
+    },
+
     showCopiedState: function(item) {
         // Visual feedback for the entire copied block with blue glow effect
         item.addClass('mblock-copy-glow');

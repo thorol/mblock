@@ -1,5 +1,12 @@
 # MBlock - REDAXO Addon für Modul-Input-Blöcke
 
+## Version 4.5.6 - 2026-02-24
+
+### Bug Fixes
+* **Radio-Button (Copy & Paste) – Wert nicht übernommen**: Alle Radio-Inputs einer Gruppe teilen denselben `name`-Attribut. Bisher wurde der `formData`-Eintrag bei jeder Iteration überschrieben, sodass immer das letzte (nicht ausgewählte) Radio gewann. Die Erfassung speichert jetzt pro Gruppe nur den tatsächlich gewählten Wert als neuen `radio_group`-Typ.
+* **Radio-Button (Copy & Paste) – `active`-Klasse als Fallback**: MForm Bild-Radios und Color-Radios markieren die aktive Option zusätzlich mit `class="active"` am `<label>`. Diese Klasse wird nun beim Erfassen als Fallback ausgewertet, falls `prop('checked')` im DOM-Klon nicht gesetzt ist.
+* **Radio-Button (Copy & Paste) – Tab-Panel-Reset**: Nach dem Einfügen triggert mblock `rex:ready`, wodurch Tab-Panel- und MForm-Initialisierungen alle `active`-Klassen auf Labels zurücksetzen. Die Radio-Wiederherstellung wird deshalb zweistufig durchgeführt: einmal direkt beim Einfügen und nochmals nach dem `rex:ready`/`trigger('change')`-Zyklus über die neue `restoreRadioGroups()`-Methode.
+
 ## Version 4.5.5 - 2026-02-15
 
 ### Bug Fixes
