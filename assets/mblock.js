@@ -660,14 +660,27 @@ function mblock_update_rex_ids($element, sindex, mblock_count, eindex) {
  */
 function mblock_update_rex_buttons($element, sindex, mblock_count, eindex) {
     try {
-        const $parent = $element.parent();
-        $parent.find('a.btn-popup').each(function () {
+        const newIdPart = '' + sindex + mblock_count + '00' + eindex;
+        // Suche Buttons im nächsten Widget-Container oder im Parent als Fallback
+        const $container = $element.closest('.rex-js-widget-link, .rex-js-widget-media, .rex-js-widget-medialist, .rex-js-widget-linklist, .rex-js-widget-customlink, .input-group');
+        const $scope = $container.length ? $container : $element.parent();
+        $scope.find('a.btn-popup').each(function () {
             const $btn = $(this);
             const onclick = $btn.attr('onclick');
             if (onclick) {
-                const newOnclick = onclick
-                    .replace(/\('?\d+/, '(\'' + sindex + mblock_count + '00' + eindex)
-                    .replace(/_\d+/, '_' + sindex + mblock_count + '00' + eindex);
+                let newOnclick = onclick;
+                // openLinkMap('REX_LINK_X', ...) -> _X ersetzen
+                newOnclick = newOnclick.replace(/(openLinkMap\('REX_LINK_)\d+/, '$1' + newIdPart);
+                // deleteREXLink('X') oder deleteREXLink(X) -> korrekt mit Quotes
+                newOnclick = newOnclick.replace(/deleteREXLink\([^)]+\)/, "deleteREXLink('" + newIdPart + "')");
+                // openREXMedia('X', ...) und ähnliche
+                newOnclick = newOnclick.replace(/(_)\d+([',)])/, '$1' + newIdPart + '$2');
+                // Fallback: erste Ziffernfolge nach ( ersetzen (für unbekannte Patterns)
+                if (newOnclick === onclick) {
+                    newOnclick = newOnclick
+                        .replace(/\('?\d+'?/, "('" + newIdPart + "'")
+                        .replace(/_\d+/, '_' + newIdPart);
+                }
                 $btn.attr('onclick', newOnclick);
             }
         });
@@ -2952,25 +2965,24 @@ function mblock_reinitialize_redaxo_widgets(container) {
                 if (linkIdMatch) {
                     const linkId = linkIdMatch[1];
                     
-                    // Find widget container
-                    const $widget = $input.closest('.rex-js-widget-link, .rex-js-widget-customlink');
-                    if ($widget.length) {
-                        // Update all buttons for this link widget
-                        $widget.find('.btn-popup').each(function() {
-                            const $btn = $(this);
-                            const onclick = $btn.attr('onclick');
-                            
-                            if (onclick) {
-                                if (onclick.includes('openLinkMap')) {
-                                    const newOnclick = onclick.replace(/openLinkMap\([^,)]+/, `openLinkMap('REX_LINK_${linkId}'`);
-                                    $btn.attr('onclick', newOnclick);
-                                } else if (onclick.includes('deleteREXLink')) {
-                                    const newOnclick = onclick.replace(/deleteREXLink\([^)]+/, `deleteREXLink('${linkId}'`);
-                                    $btn.attr('onclick', newOnclick);
-                                }
+                    // Widget-Container suchen: zuerst Standard-Klassen, dann input-group als Fallback
+                    const $widget = $input.closest('.rex-js-widget-link, .rex-js-widget-customlink, .input-group, .rex-js-widget');
+                    const $scope = $widget.length ? $widget : $input.parent();
+                    // Update all buttons for this link widget
+                    $scope.find('.btn-popup').each(function() {
+                        const $btn = $(this);
+                        const onclick = $btn.attr('onclick');
+                        
+                        if (onclick) {
+                            if (onclick.includes('openLinkMap')) {
+                                const newOnclick = onclick.replace(/openLinkMap\([^,)]+/, `openLinkMap('REX_LINK_${linkId}'`);
+                                $btn.attr('onclick', newOnclick);
+                            } else if (onclick.includes('deleteREXLink')) {
+                                const newOnclick = onclick.replace(/deleteREXLink\([^)]+\)/, `deleteREXLink('${linkId}')`);
+                                $btn.attr('onclick', newOnclick);
                             }
-                        });
-                    }
+                        }
+                    });
                 }
             }
         });

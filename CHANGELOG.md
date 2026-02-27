@@ -1,5 +1,13 @@
 # MBlock - REDAXO Addon für Modul-Input-Blöcke
 
+## Version 4.5.7 - 2026-02-27
+
+### Bug Fixes
+* **REX_LINK – 3. Block überschreibt Link von Block 2**: `mblock_update_rex_ids` hat `REX_LINK_`-Inputs beim Reindexieren nicht berücksichtigt, sodass alle neuen Blöcke dieselbe Link-ID aus dem Template behielten. Link-Popup-Callbacks schrieben dadurch stets in Block 2. `REX_LINK_` wird nun korrekt mit dem Block-Index reindexiert.
+* **REX_LINK – `_NAME`-Input nach Reindexierung nicht auffindbar** (`null is not an object evaluating getElementById("REX_LINK_X_NAME")`): Der textuelle Anzeigefeld-Input (`_NAME`) bekam beim generischen Durchlauf einen anderen `eindex` als der hidden-Input → ID-Mismatch. `_NAME`-Inputs werden jetzt im generischen Loop übersprungen und synchron zum hidden-Input mit derselben ID-Basis aktualisiert.
+* **`deleteREXLink` onclick nach Drag & Drop kaputt**: Das generische Regex-Replace in `mblock_update_rex_buttons` hat bei `deleteREXLink('X')` die schließende Quote entfernt → ungültiges JavaScript. Onclick-Handler werden jetzt per spezifischem Pattern korrekt mit Quotes ersetzt.
+* **REX_LINK Buttons in Modulen ohne `rex-js-widget-link`-Klasse nicht aktualisiert**: `closest('.rex-js-widget-link')` schlug bei HTML-basierten Link-Feldern ohne diese Klasse fehl. Die Widget-Suche verwendet jetzt eine Fallback-Kette (`.input-group`, `.rex-js-widget`), die auch bei eigenen Templates greift.
+
 ## Version 4.5.6 - 2026-02-24
 
 ### Bug Fixes
