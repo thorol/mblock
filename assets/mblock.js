@@ -621,8 +621,31 @@ function mblock_update_rex_ids($element, sindex, mblock_count, eindex) {
              elementId.indexOf('REX_MEDIALIST_') >= 0)) {
             
             const parentEindex = $element.parent().data('eindex') || eindex;
-                const newId = elementId.replace(/\d+/, '' + sindex + mblock_count + '00' + parentEindex);
+            const newId = elementId.replace(/\d+/, '' + sindex + mblock_count + '00' + parentEindex);
             $element.attr('id', newId);
+
+            // Button-Updates für Popup-Funktionen
+            mblock_update_rex_buttons($element, sindex, mblock_count, parentEindex);
+        }
+
+        // INPUT-Elemente REX_LINK_: hidden und _NAME müssen dieselbe ID-Basis bekommen.
+        // _NAME-Inputs werden übersprungen – sie werden gemeinsam mit dem hidden-Input aktualisiert.
+        if (nodeName === 'INPUT' && elementId.indexOf('REX_LINK_') >= 0) {
+            // _NAME-Input überspringen, wird weiter unten zusammen mit hidden-Input gesetzt
+            if (elementId.indexOf('_NAME') >= 0) {
+                return;
+            }
+
+            const parentEindex = $element.parent().data('eindex') || eindex;
+            const newId = elementId.replace(/\d+/, '' + sindex + mblock_count + '00' + parentEindex);
+            $element.attr('id', newId);
+
+            // Zugehöriges _NAME-Input anhand der alten ID im selben sortitem finden und synchron aktualisieren
+            const $sortItem = $element.closest('.sortitem');
+            const $nameInput = $sortItem.find('input[id="' + elementId + '_NAME"]');
+            if ($nameInput.length) {
+                $nameInput.attr('id', newId + '_NAME');
+            }
 
             // Button-Updates für Popup-Funktionen
             mblock_update_rex_buttons($element, sindex, mblock_count, parentEindex);
