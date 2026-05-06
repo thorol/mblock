@@ -1,6 +1,9 @@
 REDAXO AddOn :: MBlock
 ======
 
+ℹ️ **Mai 2026:** Das AddOn befindet sich im Maintenance-Status ab 4.5.7 werden keine neuen Features mehr entwickelt.
+-----
+
 Mit MBlock ist es möglich, innerhalb eines Moduls beliebig viele Datenblöcke zu erzeugen. Diese können dann einfach per Button oder Drag & Drop sortiert werden. Die erweiterte Version bietet Copy & Paste Funktionalität und einen Offline/Online Toggle für einzelne Blöcke.
 
 _English:_ MBlock lets you create an unlimited number of data blocks within a single module. These data blocks can be sorted per click or drag & drop. The enhanced version provides copy & paste functionality and an offline/online toggle for individual blocks.
