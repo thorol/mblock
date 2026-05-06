@@ -1,5 +1,10 @@
 # MBlock - REDAXO Addon für Modul-Input-Blöcke
 
+## Version 4.5.8 - 2026-05-06
+
+### Bug Fixes
+* **SourceMap-Fehler (404) auf Live-Servern**: Der `sourceMappingURL`-Kommentar in der `mblock.min.js` wurde entfernt, um 404-Fehler in den Browser-Entwicklertools auf Live-Servern zu vermeiden, die keine `.map` Dateien ausliefern. Die Map-Datei bleibt weiterhin für Entwicklungszwecke in den Sourcen erhalten.
+
 ## Version 4.5.7 - 2026-02-27
 
 ### Bug Fixes
