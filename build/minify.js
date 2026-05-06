@@ -71,7 +71,7 @@ const terserOptions = {
     },
     sourceMap: {
         filename: path.basename(outputFile),
-        url: path.basename(sourceMapFile)
+        // url: path.basename(sourceMapFile)
     },
     // Avoid global toplevel mangling; keep top-level names stable
     toplevel: false,
