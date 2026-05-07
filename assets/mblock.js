@@ -917,6 +917,13 @@ function mblock_add_item(element, item) {
         $widget.addClass('is-empty').removeClass('is-grid-view is-gallery-view is-list-view');
     });
 
+    // Neue Bloecke sollen mit leeren Checkbox-Group-Widgets starten.
+    // Active-Klassen und Hidden-Value zuruecksetzen, damit kein Zustand vom Quellblock vererbt wird.
+    iClone.find('.mform-checkbox-group').each(function () {
+        $(this).find('.mform-cbg-option').removeClass('active');
+        $(this).find('.mform-cbg-value').val('');
+    });
+
     if (item === false) {
         // add clone
         element.prepend(iClone);
