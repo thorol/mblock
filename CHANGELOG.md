@@ -1,5 +1,15 @@
 # MBlock - REDAXO Addon für Modul-Input-Blöcke
 
+## Version 4.5.9 - 2026-05-07
+
+### Bug Fixes
+* **MForm 9 Widgets in MBlock sauber reindexiert**: `custom_link`, `custom_medialist`, `custom_linklist` und `imglist` werden nach Add/Sort jetzt mit ihren aktuellen Widget-IDs, Popup-Callbacks und internen Referenzen neu initialisiert. Dadurch funktionieren Picker nach dem Verschieben und in neu angelegten Blöcken zuverlässig weiter.
+* **Neue MBlocks starten mit leeren MForm-Widgets**: Beim Klonen eines neuen Blocks werden MForm-Widgetzustände jetzt gezielt zurückgesetzt. Betroffen sind `custom_link` sowie die `mform-list-widget`-Familie (`medialist`, `linklist`, `imglist`). Sichtbare Texte, Hidden-Values, Select-Optionen und gerenderte Listen werden nicht mehr aus dem Quellblock übernommen.
+
+### Rückwärtskompatibilität
+* **Kein Datenbank- oder Content-Break**: Bestehende MBlock-Module, gespeicherte Inhalte und Datenstrukturen bleiben unverändert kompatibel.
+* **Kein harter Addon-Conflict erforderlich**: MBlock selbst bleibt zu älteren MForm-Versionen lauffähig. Die Fixes in 4.5.9 fokussieren auf `custom_link` und die `mform-list-widget`-Familie.
+
 ## Version 4.5.8 - 2026-05-06
 
 ### Bug Fixes

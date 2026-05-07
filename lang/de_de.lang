@@ -4,6 +4,7 @@ mblock_configuration = Konfiguration
 mblock_settings = Einstellungen
 mblock_best_practices = Best Practices
 mblock_changelog = Changelog
+mblock_tutorial = Tutorial
 
 mblock_overview = Übersicht
 mblock_config_save = Einstellungen speichern

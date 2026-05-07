@@ -753,35 +753,91 @@ function mblock_reindex_special_elements($sortItem, index, sindex, mblock_count)
         });
 
         // Custom Links (MForm)
-        $sortItem.find('.custom-link').each(function (key) {
+        // Pro Widget genau einmal reindizieren.
+        // `.custom-link` existiert sowohl am Outer-Wrapper als auch an der inneren input-group.
+        // Deshalb direkt über `.rex-js-widget-customlink` gehen, sonst werden IDs doppelt umgeschrieben.
+        $sortItem.find('.rex-js-widget-customlink').each(function (key) {
             const eindex = key + 1;
-            const $customlink = $(this);
-            
+            const newId = '' + sindex + mblock_count + '00' + eindex;
+            const $widget = $(this);
+            const $customlink = $widget.find('.input-group.custom-link').first();
+
+            $widget.attr('data-widget-id', newId);
+            $customlink.attr('data-id', newId);
+            $customlink.find('ul.dropdown-menu').attr('id', 'mform_ylink_' + newId);
+
             $customlink.find('input').each(function () {
                 const $input = $(this);
                 const inputId = $input.attr('id');
                 if (inputId) {
-                    $input.attr('id', inputId.replace(/\d+/, '' + sindex + mblock_count + '00' + eindex));
+                    $input.attr('id', inputId.replace(/\d+/, newId));
                 }
             });
-            
+
             $customlink.find('a.btn-popup').each(function () {
                 const $btn = $(this);
                 const btnId = $btn.attr('id');
                 if (btnId) {
-                    $btn.attr('id', btnId.replace(/\d+/, '' + sindex + mblock_count + '00' + eindex));
+                    $btn.attr('id', btnId.replace(/\d+/, newId));
                 }
             });
-            
-            $customlink.attr('data-id', '' + sindex + mblock_count + '00' + eindex);
-            
-            // Trigger MForm custom link function if available
-            if (typeof window.mform_custom_link === 'function') {
-                try {
-                    window.mform_custom_link($customlink);
-                } catch (mformError) {
-                    console.warn('MBlock: MForm custom link Fehler:', mformError);
-                }
+
+            // Neu initialisieren, damit customlink.js die aktuelle Widget-ID wieder sauber bindet.
+            $widget.trigger('rex:ready', [$widget]);
+        });
+
+        // MForm9 list-widgets (custom_medialist / custom_linklist)
+        // Diese Widgets verwenden eigene data-widget-id und mform-list-select/mform-list-value IDs,
+        // die beim MBlock-Reindex nicht automatisch aktualisiert werden.
+        // Wir setzen die IDs neu und triggern rex:ready, damit der Popup-Callback
+        // auf die richtige Widget-Instanz zeigt.
+        $sortItem.find('.mform-list-widget').each(function (key) {
+            try {
+                const $widget = $(this);
+                const newId = '' + sindex + mblock_count + '00' + (key + 1);
+
+                // data-widget-id auf neuen Wert setzen
+                $widget.attr('data-widget-id', newId);
+
+                // IDs von Select und Hidden-Input aktualisieren
+                $widget.find('select.mform-list-select').attr('id', function (_, id) {
+                    return id ? id.replace(/\d+$/, newId) : id;
+                });
+                $widget.find('input.mform-list-value').attr('id', function (_, id) {
+                    return id ? id.replace(/\d+$/, newId) : id;
+                });
+
+                // Popup-Buttons (openREXMedialist / openREXLinklist) aktualisieren
+                $widget.find('[onclick]').each(function () {
+                    const $btn = $(this);
+                    const onclick = $btn.attr('onclick');
+                    if (onclick) {
+                        $btn.attr('onclick', onclick.replace(/\b\d{4,}\b/, newId));
+                    }
+                });
+                $widget.find('[data-params]').each(function () {
+                    const $el = $(this);
+                    const params = $el.attr('data-params');
+                    if (params) {
+                        $el.attr('data-params', params.replace(/\b\d{4,}\b/, newId));
+                    }
+                });
+
+                // Widget neu initialisieren: rex:ready auf dem Widget-Element feuern
+                // damit list-widget.js den Popup-Callback neu registriert
+                $widget.trigger('rex:ready', [$widget]);
+            } catch (widgetError) {
+                console.warn('MBlock: Fehler beim Reindex eines MForm9-List-Widgets:', widgetError);
+            }
+        });
+
+        // MForm9 Custom-Link-Widgets (.rex-js-widget-customlink)
+        // Sicherstellen dass customlink.js nach Reindex neu initialisiert wird
+        $sortItem.find('.rex-js-widget-customlink').each(function () {
+            try {
+                $(this).trigger('rex:ready', [$(this)]);
+            } catch (clError) {
+                console.warn('MBlock: Fehler beim Reindex eines MForm9-Customlink-Widgets:', clError);
             }
         });
     } catch (error) {
@@ -828,6 +884,37 @@ function mblock_add_item(element, item) {
         $(this).attr('name', 'mblock_new_' + $(this).attr('name'));
         // fix lost value
         $(this).attr('data-value', $(this).val());
+    });
+
+    // Neue Bloecke sollen mit leeren MForm-Widgets starten.
+    // Seit Link- und Media-Felder als custom_link-Wrapper gerendert werden,
+    // muessen sichtbarer Textwert, Hidden-Value und Widget-Zustand explizit
+    // zurueckgesetzt werden, sonst uebernimmt der Clone den alten Inhalt.
+    iClone.find('.rex-js-widget-customlink').each(function () {
+        const $widget = $(this);
+        const $customLink = $widget.find('.input-group.custom-link').first();
+
+        $widget.find('input[type="hidden"], input[type="text"]').val('');
+        $widget.find('a.btn-popup').removeClass('active');
+        $widget.find('a.media_preview_link').addClass('hidden disabled').attr('aria-disabled', 'true');
+        $customLink.addClass('is-empty');
+    });
+
+    // Neue Bloecke sollen auch bei MForm-List-Widgets leer starten.
+    // Das betrifft custom_medialist, custom_linklist und imglist,
+    // die sonst Select-Optionen, Hidden-Values und gerenderte Listen aus dem
+    // Quellblock mitnehmen wuerden.
+    iClone.find('.mform-list-widget').each(function () {
+        const $widget = $(this);
+
+        $widget.find('input.mform-list-value').val('');
+        $widget.find('select.mform-list-select').each(function () {
+            $(this).find('option').prop('selected', false).remove();
+            $(this).val('');
+        });
+        $widget.find('ul.mform-list-items, ul.thumbnail-list').empty();
+        $widget.find('.mform-list-btn, .btn-popup').removeClass('active disabled').attr('aria-disabled', 'false');
+        $widget.addClass('is-empty').removeClass('is-grid-view is-gallery-view is-list-view');
     });
 
     if (item === false) {

@@ -1,5 +1,5 @@
 package: mblock
-version: 4.5.8
+version: 4.6.0
 name: MBlock
 author: Friends Of REDAXO
 supportpage: https://github.com/FriendsOfREDAXO/mblock
@@ -11,6 +11,7 @@ page:
     icon: rex-icon fa-layer-group
     subpages:
         overview: { title: 'MBlock' }
+        tutorial: { title: 'translate:mblock_tutorial', subPath: docs/tutorial.md }
         demo:
             title: translate:demo_base
             subpages:

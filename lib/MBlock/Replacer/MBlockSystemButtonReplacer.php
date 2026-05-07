@@ -258,10 +258,14 @@ class MBlockSystemButtonReplacer
         if ($dom->hasChildNodes()) {
             /** @var DOMElement $child */
             foreach ($dom->getElementsByTagName('input') as $child) {
-                // hidden input
+                // hidden input – link
                 if (strpos($child->getAttribute('name'), 'REX_INPUT_LINK') !== false) {
                     // replace name
                     self::replaceName($child, $item, 'REX_INPUT_LINK');
+                }
+                // hidden input – media compat (MForm useCustomLinkForClassicWidgets)
+                if (strpos($child->getAttribute('name'), 'REX_INPUT_MEDIA') !== false) {
+                    self::replaceName($child, $item, 'REX_INPUT_MEDIA');
                 }
                 // change id
                 $attrId = preg_replace('/\d+/', $id, $child->getAttribute('id'));

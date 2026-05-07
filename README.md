@@ -1,517 +1,397 @@
 REDAXO AddOn :: MBlock
 ======
 
-ℹ️ **Mai 2026:** Das AddOn befindet sich im Maintenance-Status ab 4.5.7 werden keine neuen Features mehr entwickelt.
------
+> **Mai 2026 – Maintenance-Status:** Ab Version 4.6 werden keine neuen Features mehr entwickelt.
+> MBlock ist stabil und weiterhin voll funktionsfähig, befindet sich aber im reinen Wartungsmodus.
+> Fehlerbehebungen und wichtige Stabilitätskorrekturen werden weiterhin umgesetzt.
 
-Mit MBlock ist es möglich, innerhalb eines Moduls beliebig viele Datenblöcke zu erzeugen. Diese können dann einfach per Button oder Drag & Drop sortiert werden. Die erweiterte Version bietet Copy & Paste Funktionalität und einen Offline/Online Toggle für einzelne Blöcke.
+---
 
-_English:_ MBlock lets you create an unlimited number of data blocks within a single module. These data blocks can be sorted per click or drag & drop. The enhanced version provides copy & paste functionality and an offline/online toggle for individual blocks.
+Mit MBlock ist es möglich, innerhalb eines Moduls beliebig viele Datenblöcke zu erzeugen. Diese können per Button oder Drag & Drop sortiert werden. Die erweiterte Version bietet Copy & Paste und einen Online/Offline-Toggle für einzelne Blöcke.
 
-> Please note: The examples are valid for MForm version 8 and higher. MBlock now requires the bloecks addon (^5.2.0) for modern drag & drop functionality.
+_English:_ MBlock lets you create an unlimited number of data blocks within a single module, sortable by click or drag & drop. The enhanced version provides copy & paste and an offline/online toggle for individual blocks.
 
-## 🚨 Hinweis für markitup- und ckeditor-Nutzer 
+> **MForm >= 9:** Für neue Module ist [MForm 9](https://github.com/FriendsOfREDAXO/mform) mit dem integrierten Flex-Repeater die modernere Wahl. MBlock bleibt für bestehende Projekte vollständig nutzbar.
 
-Copy & Paste funktioniert leider nicht! 
+## 🚨 Hinweis für markitup- und ckeditor-Nutzer
 
-Es sollte in den betreffenden Modulen deaktiviert werden. 
+Copy & Paste funktioniert mit diesen Editoren nicht und sollte in den betreffenden Modulen deaktiviert werden:
 
-Beispiel 
-```
+```php
 echo MBlock::show(1, $form, [
-    'min' => 1,              // Minimale Anzahl Items (werden initial angezeigt)
-    'max' => 10,             // Maximale Anzahl Items  
-    'template' => 'modern',  // Template-Name
-    'copy_paste' => false,    // Copy & Paste aktivieren
-    'online_offline' => true // Online/Offline Toggle , hidden field muss angelegt sein. 
+    'copy_paste' => false,
 ]);
 ```
 
-## Features / Funktionen
+## Features
 
-### Grundfunktionen / Core Features
-
-- [x] **Beliebig viele Datenblöcke** pro Modul erstellen
-- [x] **Drag & Drop Sortierung** mit bloecks addon (^5.2.0)
-- [x] **Minimale/Maximale Anzahl** von Blöcken definierbar
-- [x] **MForm Integration** für professionelle Formulare
-- [x] **Template System** mit Prioritätsladung
-- [x] **Mehrsprachigkeit** (DE/EN)
-
-### Erweiterte Funktionen / Advanced Features (MBlock 4.0)
-
-- [x] **Online/Offline Toggle** - Blöcke aktivieren/deaktivieren ohne löschen
-- [x] **Copy & Paste** - Komfortable Duplizierung von Inhalten
-- [x] **Frontend API Methoden** - `filterByField()`, `sortByField()`, `groupByField()`
-- [x] **Schema.org Support** - SEO-optimierte JSON-LD Generierung
-- [x] **Erweiterte Datenabfrage** - Online/Offline/All Modi
-- [x] **Template-Priorität** - Custom templates überschreiben defaults
-- [x] **Media-ID Konflikt-Schutz** - Bessere Warnung bei ID-Überschneidungen
-
-### Editor Support (MBlock 4.5)
-
-- [x] **TinyMCE Support** - Volle Unterstützung für TinyMCE (v4-v8)
-- [x] **CKEditor 5** - Verbesserte Copy & Paste Funktionalität
-
-## Namespace Migration (Version 4.0)
-
-**MBlock führt Namespaces ein!** Für neue Projekte wird die Verwendung des Namespace empfohlen:
-
-```php
-<?php
-// Empfohlen: Neue Namespace-Syntax
-use FriendsOfRedaxo\MBlock\MBlock;
-
-$items = MBlock::getDataArray("REX_VALUE[1]");
-echo MBlock::show(1, $mform->show());
-```
-
-**Vollständig rückwärtskompatibel!** Bestehende Module funktionieren weiterhin ohne Änderungen:
-
-```php
-<?php
-// Weiterhin unterstützt: Legacy-Syntax (für Bestandscode)
-$items = MBlock::getDataArray("REX_VALUE[1]");
-echo MBlock::show(1, $mform->show());
-```
-
-### Migration Guide
-- **Neue Module**: Verwenden die `use FriendsOfRedaxo\MBlock\MBlock;` Syntax
-- **Bestehende Module**: Funktionieren ohne Änderungen weiter
-- **Deprecated-Warnung**: Alte Syntax wird in Version 5.0 entfernt
+- **Beliebig viele Datenblöcke** pro Modul
+- **Drag & Drop Sortierung**
+- **Min/Max Anzahl** von Blöcken definierbar
+- **MForm Integration** – alle MForm-9-Felder werden unterstützt
+- **Template-System** mit Custom-Template-Unterstützung
+- **Online/Offline Toggle** – Blöcke aktivieren/deaktivieren ohne löschen
+- **Copy & Paste** – Duplizierung von Blöcken
+- **Frontend API** – `filterByField()`, `sortByField()`, `groupByField()`
+- **TinyMCE / CKEditor 5** – volle Editor-Unterstützung
+- **Mehrsprachigkeit** (DE/EN)
 
 ## Installation
 
-MBlock erfordert:
-
 ```bash
-# Via REDAXO Installer
-# 1. Gehe zu System > Installer
-# 2. Suche nach "mblock"
-# 3. Installiere mblock zusammen mit bloecks
+# Via REDAXO Installer:
+# System > Installer > "mblock" suchen > installieren
+```
+
+## Namespace
+
+Seit Version 4.0 steht der Namespace `FriendsOfRedaxo\MBlock` zur Verfügung. Die Legacy-Syntax ohne Namespace ist weiterhin vollständig kompatibel.
+
+```php
+<?php
+use FriendsOfRedaxo\MBlock\MBlock;
+
+$items = MBlock::getOnlineDataArray("REX_VALUE[1]");
+echo MBlock::show(1, $mform->show());
 ```
 
 ## API & Datenabfrage
 
-### Zentrale getDataArray() Methode
+### Daten auslesen
 
-**Mit Namespace (empfohlen für neue Projekte):**
 ```php
 <?php
 use FriendsOfRedaxo\MBlock\MBlock;
 
-// Alle MBlock-Daten abrufen
+// Alle Blöcke (inkl. offline)
 $allItems = MBlock::getDataArray("REX_VALUE[1]");
 
-// Nur Online-Blöcke (für Frontend) - EMPFOHLEN
+// Nur Online-Blöcke – empfohlen für das Frontend
+$onlineItems = MBlock::getOnlineDataArray("REX_VALUE[1]");
+// oder:
 $onlineItems = MBlock::getDataArray("REX_VALUE[1]", 'online');
 
-// Nur Offline-Blöcke (für Backend-Previews)
-$offlineItems = MBlock::getDataArray("REX_VALUE[1]", 'offline');
-
-// Convenience-Methoden
-$onlineItems = MBlock::getOnlineDataArray("REX_VALUE[1]");
+// Nur Offline-Blöcke
 $offlineItems = MBlock::getOfflineDataArray("REX_VALUE[1]");
 ```
 
-**Legacy-Syntax (weiterhin unterstützt):**
-```php
-<?php
-// Alle MBlock-Daten abrufen
-$allItems = MBlock::getDataArray("REX_VALUE[1]");
+### Frontend-Datenverarbeitung
 
-// Nur Online-Blöcke (für Frontend) - EMPFOHLEN
-$onlineItems = MBlock::getDataArray("REX_VALUE[1]", 'online');
-
-// Nur Offline-Blöcke (für Backend-Previews)
-$offlineItems = MBlock::getDataArray("REX_VALUE[1]", 'offline');
-
-// Convenience-Methoden
-$onlineItems = MBlock::getOnlineDataArray("REX_VALUE[1]");
-$offlineItems = MBlock::getOfflineDataArray("REX_VALUE[1]");
-``` 
-
-### Frontend API - Datenverarbeitung
-
-**Mit Namespace (empfohlen):**
 ```php
 <?php
 use FriendsOfRedaxo\MBlock\MBlock;
 
 $items = MBlock::getOnlineDataArray("REX_VALUE[1]");
 
-// Nach Feld filtern
+// Filtern
 $newsItems = MBlock::filterByField($items, 'category', 'news');
-$activeItems = MBlock::filterByField($items, 'status', 'active');
 
-// Nach Feld sortieren
-$sortedByName = MBlock::sortByField($items, 'name', 'ASC');
-$sortedByDate = MBlock::sortByField($items, 'date', 'DESC', 'date');
-$sortedByPrice = MBlock::sortByField($items, 'price', 'DESC', 'numeric');
+// Sortieren
+$sorted = MBlock::sortByField($items, 'date', 'DESC', 'date');
 
-// Nach Feld gruppieren
+// Gruppieren
 $grouped = MBlock::groupByField($items, 'category');
 foreach ($grouped as $category => $categoryItems) {
-    echo "<h2>" . rex_escape($category) . "</h2>";
+    echo '<h2>' . rex_escape($category) . '</h2>';
     foreach ($categoryItems as $item) {
-        echo "<p>" . rex_escape($item['title']) . "</p>";
+        echo '<p>' . rex_escape($item['title']) . '</p>';
     }
 }
 
-// Anzahl begrenzen (Pagination)
-$topItems = MBlock::limitItems($items, 5);
+// Anzahl begrenzen (für Pagination)
+$topItems  = MBlock::limitItems($items, 5);
 $nextItems = MBlock::limitItems($items, 5, 5);
-
-// SEO Schema.org JSON-LD generieren
-$schema = MBlock::generateSchema($items, 'Person', [
-    'name' => 'name',
-    'jobTitle' => 'position',
-    'image' => 'photo',
-    'email' => 'email'
-]);
-echo '<script type="application/ld+json">' . json_encode($schema) . '</script>';
 ```
 
-### Legacy Array-Filterung (falls Array schon vorhanden)
+### Online/Offline-Status prüfen
 
 ```php
-$data = rex_var::toArray("REX_VALUE[1]");
-
-// Online/Offline Check (MBlock 4.0)
-foreach ($data as $item) {
+foreach (MBlock::getDataArray("REX_VALUE[1]") as $item) {
     if (MBlock::isOnline($item)) {
-        // Item ist online
         echo rex_escape($item['title']);
     }
 }
-
-// Legacy-Methoden (deprecated, bitte getDataArray() verwenden)
-$onlineItems = MBlock::getOnlineItems($data);
-$offlineItems = MBlock::getOfflineItems($data);
 ```
 
-## Templates & Theming
+> **Hinweis:** `MBlock::getOnlineItems()` und `getOfflineItems()` (alte Signatur mit Array-Parameter) sind deprecated. Bitte `getOnlineDataArray()` / `getOfflineDataArray()` verwenden.
 
-### Template-System mit Dropdown-Auswahl
-MBlock bietet ein modernes Template-System mit grafischer Auswahl über ein Dropdown-Menü in den AddOn-Einstellungen. Das System kopiert automatisch die CSS-Dateien in den `assets/` Ordner und sorgt für optimale Performance.
+## MForm Integration
 
-### Template-Auswahl
-Die Template-Auswahl erfolgt über die **MBlock-Einstellungen**:
+MBlock arbeitet am besten zusammen mit [MForm](https://github.com/FriendsOfREDAXO/mform). **MForm 9 ist vollständig kompatibel** – alle Felder funktionieren in MBlock.
 
-1. **Gehe zu** `Addons > MBlock > Einstellungen`
-2. **Wähle ein Template** aus der Dropdown-Liste
-3. **Klicke "Speichern"** - Das CSS wird automatisch kopiert
-4. **Das Template ist sofort aktiv**
+### Feldkompatibilität MForm 9 + MBlock
 
+| Methode | Kategorie | Hinweis |
+|---------|-----------|---------|
+| `addTextField()` | Text | ✅ uneingeschränkt |
+| `addTextAreaField()` | Text | ✅ uneingeschränkt |
+| `addHiddenField()` | Text | ✅ uneingeschränkt |
+| `addSelectField()` | Auswahl | ✅ uneingeschränkt |
+| `addMultiSelectField()` | Auswahl | ✅ uneingeschränkt |
+| `addCheckboxField()` | Auswahl | ✅ uneingeschränkt |
+| `addToggleCheckboxField()` | Auswahl | ✅ uneingeschränkt |
+| `addRadioField()` | Auswahl | ✅ uneingeschränkt |
+| `addRadioImgField()` | Auswahl | ✅ uneingeschränkt |
+| `addRadioIconField()` | Auswahl | ✅ uneingeschränkt |
+| `addRadioColorField()` | Auswahl | ✅ uneingeschränkt |
+| `addMediaField(n)` | Media/Link | ✅ Ausgabe: `$item['REX_MEDIA_n']` · mit `useCustomLinkForClassicWidgets(true)` kein Klonen-Problem |
+| `addMedialistField(n)` | Media/Link | ✅ Ausgabe: `$item['REX_MEDIALIST_n']` |
+| `addLinkField(n)` | Media/Link | ✅ Ausgabe: `$item['REX_LINK_n']` · mit `useCustomLinkForClassicWidgets(true)` kein Klonen-Problem |
+| `addLinklistField(n)` | Media/Link | ✅ Ausgabe: `$item['REX_LINKLIST_n']` |
+| `addMFormMediaField("$id.0.key")` | Media/Link | ✅ MForm-native, kein Reindex-Problem · Ausgabe: `$item['key']` |
+| `addCustomLinkField("$id.0.key")` | Media/Link | ✅ Ausgabe: `$item['key']` · Normalisierung via `MFormOutputHelper::createLinkData()` empfohlen |
+| `addCustomLinkMultipleField("$id.0.key")` | Media/Link | ✅ Neu in MForm 9 · gibt JSON-Array mit mehreren Links zurück |
+| `addConditionalFieldsetArea()` | Layout | ✅ Neu in MForm 9 · regelbasierte Feldanzeige funktioniert in MBlock |
+| `addFieldsetArea()` | Layout | ✅ uneingeschränkt |
 
-### Dark Mode Support
-**Die mitgelieferten Templates** unterstützen Dark Mode:
+> **Hinweis zu `addMediaField` / `addLinkField` mit numerischer ID:**  
+> Beim **Klonen** von Blöcken in MBlock kann es ohne `useCustomLinkForClassicWidgets(true)` zu Reindex-Problemen kommen, weil REDAXO-Widgets intern per Widget-ID referenziert werden. Mit dem Flag wird das custom_link-Widget verwendet – das Speicherformat (`REX_MEDIA_n` / `REX_LINK_n`) bleibt dabei identisch.
 
-- **REDAXO Theme Detection** (`body.rex-theme-dark`)
-- **Browser Preference** (`@media (prefers-color-scheme: dark)`)
-- **Bootstrap 5 Dark Mode** (`[data-bs-theme="dark"]`)
+### Beispiel: Team-Mitglieder (mit MForm)
 
-### Custom Templates erstellen
-Eigene Templates können im `data/` Ordner erstellt werden:
-
-```bash
-redaxo/data/addons/mblock/templates/
-├── my_custom_theme/
-│   ├── template.ini           # Template-Konfiguration
-│   ├── mblock_wrapper.ini     # HTML-Wrapper für alle Items
-│   ├── mblock_element.ini     # HTML-Template für einzelne Items
-│   └── my_custom_theme.css    # Template-Styling (gleicher Name wie Ordner!)
-```
-
-**Wichtig:** Die CSS-Datei muss den **gleichen Namen wie der Template-Ordner** haben!
-
-
-## Modulbeispiele / Module examples
-
-MBlock enthält einige Modulbeispiele. Diese finden sich auf der MBlock-Seite im REDAXO-Backend. An dieser Stelle werden nur zwei Beispiele aufgelistet — mit Unterstützung durch [MForm](https://github.com/FriendsOfREDAXO/mform) und ohne —, um zu zeigen, wie MBlock funktioniert.
-
-_English:_ MBlock contains several module examples. You’ll find them on the MBlock page within the REDAXO backend. At this point, we want to show two examples only — one with [MForm](https://github.com/FriendsOfREDAXO/mform) support and another one without — to demonstrate how MBlock works.
-
-### Example 1: team members (requires [MForm](https://github.com/FriendsOfREDAXO/mform) addon)
-
-__Input:__
+**Moduleingabe:**
 
 ```php
 <?php
-// Modernisiertes Beispiel mit MForm
-
 use FriendsOfRedaxo\MForm;
+use FriendsOfRedaxo\MBlock\MBlock;
 
-// base ID
 $id = 1;
 
-// init mform mit moderner MForm Syntax
-$mform = MForm::factory();
+// useCustomLinkForClassicWidgets(true) sorgt dafür, dass addMediaField / addLinkField
+// über das custom_link-Widget gerendert werden → kein Reindex-Problem beim Klonen.
+// Das Speicherformat (REX_MEDIA_1 / REX_LINK_n) bleibt identisch.
+MForm::useCustomLinkForClassicWidgets(true);
 
-// fieldset
-$mform->addFieldsetArea('Team member');
+$mform = MForm::factory()
+    ->addFieldsetArea('Team-Mitglied', MForm::factory()
+        ->addTextField("$id.0.name", ['label' => 'Name'])
+        ->addMediaField(1, ['label' => 'Avatar'])                                          // → $item['REX_MEDIA_1']
+        ->addCustomLinkField("$id.0.link", ['label' => 'Profil-Link', 'intern' => 1, 'extern' => 1]) // → $item['link']
+        ->addHiddenField("$id.0.mblock_offline", '0')   // Online/Offline-Toggle
+    );
 
-// textinput
-$mform->addTextField("$id.0.name", array('label'=>'Name'));
+MForm::useCustomLinkForClassicWidgets(false); // nur nötig wenn im selben Request weitere MForm-Instanzen ohne Flag folgen
 
-// media button
-$mform->addMediaField(1, array('label'=>'Avatar'));
-
-// Online/Offline Status (hidden field für Toggle-Funktion)
-$mform->addHiddenField("$id.0.mblock_offline", '0');
-
-// MBlock anzeigen (Copy & Paste ist automatisch aktiv)
-echo MBlock::show($id, $mform->show(), array(
-    'min' => 2,
-    'max' => 4
-));
-```
-
-__Output:__
-
-```php
-<?php
-use FriendsOfRedaxo\MBlock\MBlock;
-// Verbesserte Ausgabe
-$items = MBlock::getOnlineDataArray("REX_VALUE[1]"); // Nur Online-Items
-
-foreach ($items as $item) {
-    $name = rex_escape($item['name'] ?? '');
-    $mediaId = $item['REX_MEDIA_1'] ?? '';
-    
-    echo '<div class="team-member">';
-    if ($name) {
-        echo '<h3>' . $name . '</h3>';
-    }
-    if ($mediaId) {
-        $media = rex_media::get($mediaId);
-        if ($media) {
-            echo '<img src="' . rex_media_manager::getUrl('rex_media_medium', $media->getFileName()) . '" 
-                       alt="' . rex_escape($media->getTitle()) . '" class="img-responsive" />';
-        }
-    }
-    echo '</div>';
-}
-
-// Debug (nur während Entwicklung)
-// echo '<pre>';
-// dump(MBlock::getDataArray("REX_VALUE[1]")); // Alle Items inkl. Offline
-// echo '</pre>';
-```
-
-### Example 2: team members (without [MForm](https://github.com/FriendsOfREDAXO/mform))
-
-__Input:__
-
-```php
-<?php
-use FriendsOfRedaxo\MBlock\MBlock;
-// base ID
-$id = 1;
-
-// html form
-$form = <<<EOT
-    <fieldset class="form-horizontal ">
-        <legend>Team member</legend>
-        <div class="form-group">
-            <div class="col-sm-2 control-label"><label for="rv2_1_0_name">Name</label></div>
-            <div class="col-sm-10"><input id="rv2_1_0_name" type="text" name="REX_INPUT_VALUE[$id][0][name]" value="" class="form-control "></div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2 control-label"><label>Avatar</label></div>
-            <div class="col-sm-10">
-                REX_MEDIA[id="1" widget="1"]
-            </div>
-        </div>
-    </fieldset>
-EOT;
-
-// MBlock mit Features
-echo MBlock::show($id, $form, array(
+echo MBlock::show($id, $mform->show(), [
+    'min'            => 1,
+    'max'            => 10,
+    'copy_paste'     => true,
     'online_offline' => true,
-    'copy_paste' => true
-));
+]);
 ```
 
-__Output:__
+**Modulausgabe:**
 
 ```php
 <?php
 use FriendsOfRedaxo\MBlock\MBlock;
-// Sicher und modern
+use FriendsOfRedaxo\MForm\Utils\MFormOutputHelper;
+
 $items = MBlock::getOnlineDataArray("REX_VALUE[1]");
 
 foreach ($items as $item) {
-    $name = rex_escape($item['name'] ?? '');
-    $mediaId = $item['REX_MEDIA_1'] ?? '';
-    
+    $name      = rex_escape($item['name'] ?? '');
+    $mediaName = $item['REX_MEDIA_1'] ?? '';
+
+    // Unified Link-Normalisierung (funktioniert mit String und Array-Format)
+    $link = MFormOutputHelper::createLinkData($item['link'] ?? '');
+
     echo '<div class="team-member">';
-    echo '<h3>' . $name . '</h3>';
-    
-    if ($mediaId && ($media = rex_media::get($mediaId))) {
-        echo '<img src="' . rex_media_manager::getUrl('rex_media_small', $media->getFileName()) . '" 
-                   alt="' . rex_escape($media->getTitle()) . '" />';
+
+    if ($mediaName && ($media = rex_media::get($mediaName))) {
+        echo '<img src="' . rex_media_manager::getUrl('rex_media_medium', $media->getFileName()) . '"'
+           . ' alt="' . rex_escape($media->getTitle()) . '" class="img-responsive">';
     }
+
+    if ($name) {
+        echo '<h3>' . $name . '</h3>';
+    }
+
+    if ('' !== $link['customlink_url']) {
+        echo '<a href="' . rex_escape($link['customlink_url']) . '"'
+           . $link['customlink_target'] . '>'
+           . rex_escape($link['customlink_text']) . '</a>';
+    }
+
     echo '</div>';
 }
+```
+
+### Beispiel: Ohne MForm (reines HTML-Formular)
+
+Für Projekte ohne MForm-Addon kann das Formular als HTML-String übergeben werden:
+
+**Moduleingabe:**
+
+```php
+<?php
+use FriendsOfRedaxo\MBlock\MBlock;
+
+$id = 1;
+
+$form = <<<EOT
+<fieldset>
+    <legend>Team-Mitglied</legend>
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="REX_INPUT_VALUE[$id][0][name]" value="" class="form-control">
+    </div>
+    <div class="form-group">
+        <label>Avatar</label>
+        REX_MEDIA[id="1" widget="1"]
+    </div>
+</fieldset>
+EOT;
+
+echo MBlock::show($id, $form, [
+    'online_offline' => true,
+    'copy_paste'     => true,
+]);
+```
+
+**Modulausgabe:**
+
+```php
+<?php
+use FriendsOfRedaxo\MBlock\MBlock;
+
+$items = MBlock::getOnlineDataArray("REX_VALUE[1]");
+
+foreach ($items as $item) {
+    $name    = rex_escape($item['name'] ?? '');
+    $mediaId = $item['REX_MEDIA_1'] ?? '';
+
+    echo '<div class="team-member">';
+    echo '<h3>' . $name . '</h3>';
+
+    if ($mediaId && ($media = rex_media::get($mediaId))) {
+        echo '<img src="' . rex_media_manager::getUrl('rex_media_small', $media->getFileName()) . '"'
+           . ' alt="' . rex_escape($media->getTitle()) . '">';
+    }
+
+    echo '</div>';
+}
+```
+
+## MForm Field-Key-Konventionen in MBlock
+
+Je nach Methode und ID-Typ landen die Werte unter unterschiedlichen Schlüsseln im `$item`-Array.
+
+### Numerische IDs – native REDAXO-Widgets
+
+`addMediaField`, `addLinkField`, `addMedialistField`, `addLinklistField` **benötigen** eine numerische ID. MBlock leitet daraus intern den REDAXO-Variablennamen ab:
+
+| Methode | ID | Ausgabe-Schlüssel |
+|---------|----|-------------------|
+| `addMediaField(1)` | `1` | `$item['REX_MEDIA_1']` |
+| `addLinkField(2)` | `2` | `$item['REX_LINK_2']` |
+| `addMedialistField(3)` | `3` | `$item['REX_MEDIALIST_3']` |
+| `addLinklistField(4)` | `4` | `$item['REX_LINKLIST_4']` |
+
+> **Tipp:** Mit `MForm::useCustomLinkForClassicWidgets(true)` werden diese Felder intern über das `custom_link`-Widget gerendert (moderner Widget-Stil, kein Reindex-Problem beim Klonen). Das Speicherformat bleibt identisch. In einem Modul-Input reicht der einmalige Aufruf – `MForm::useCustomLinkForClassicWidgets(false)` ist nur nötig, wenn im selben Request weitere MForm-Instanzen ohne das Flag folgen.
+
+### String-Pfad-IDs – MForm Custom-Widgets
+
+`addCustomLinkField`, `addMFormMediaField` sollten mit einem **String-Pfad** als ID verwendet werden. Das letzte Pfad-Segment wird zum JSON-Schlüssel:
+
+| Methode | ID | Ausgabe-Schlüssel |
+|---------|----|-------------------|
+| `addCustomLinkField("$id.0.link")` | `"$id.0.link"` | `$item['link']` |
+| `addMFormMediaField("$id.0.bild")` | `"$id.0.bild"` | `$item['bild']` |
+
+> Eine numerische ID wie `addCustomLinkField(6)` erzeugt den wenig lesbaren Schlüssel `$item['6']`. String-Pfade sind immer vorzuziehen.
+
+### Link-Ausgabe normalisieren
+
+Custom-Link-Felder können je nach MForm-Version als String (`redaxo://10`) oder als Array mit `id`/`name` ankommen. `MFormOutputHelper::createLinkData()` normalisiert beide Formate:
+
+```php
+use FriendsOfRedaxo\MForm\Utils\MFormOutputHelper;
+
+$link = MFormOutputHelper::createLinkData($item['link'] ?? '');
+// $link['customlink_url']    – fertige href-URL
+// $link['customlink_text']   – Linktext (Artikelname, Media-Titel, URL-Fallback)
+// $link['customlink_target'] – target-Attribut (z. B. ' target="_blank" ...')
+// $link['customlink_class']  – CSS-Klasse (intern / external / media / mail / tel)
+```
+
+## MBlock::show() – Optionen
+
+```php
+echo MBlock::show($id, $form, [
+    'min'            => 1,       // Mindestanzahl Items (werden initial angezeigt)
+    'max'            => 10,      // Maximale Anzahl Items (0 = unbegrenzt)
+    'template'       => 'modern', // Template-Name
+    'copy_paste'     => true,    // Copy & Paste aktivieren
+    'online_offline' => true,    // Online/Offline-Toggle aktivieren
+]);
+```
+
+> **`online_offline`**: Erfordert ein `addHiddenField("$id.0.mblock_offline", '0')` im Formular.
+
+## Templates & Theming
+
+### Template auswählen
+
+Die Template-Auswahl erfolgt unter `Addons > MBlock > Einstellungen`. Das CSS wird automatisch in den `assets/`-Ordner kopiert.
+
+### Dark Mode
+
+Die mitgelieferten Templates unterstützen Dark Mode über:
+
+- `body.rex-theme-dark` (REDAXO Theme)
+- `@media (prefers-color-scheme: dark)` (Browser)
+- `[data-bs-theme="dark"]` (Bootstrap 5)
+
+### Custom Templates
+
+Eigene Templates in `redaxo/data/addons/mblock/templates/`:
+
+```
+my_theme/
+├── template.ini           # Konfiguration
+├── mblock_wrapper.ini     # HTML-Wrapper für alle Items
+├── mblock_element.ini     # HTML-Template für einzelne Items
+└── my_theme.css           # CSS (gleicher Name wie der Ordner!)
 ```
 
 ## Development & Build
 
-### Modulare JavaScript-Architektur
+### JavaScript-Architektur
 
-MBlock verwendet eine **modulare JavaScript-Architektur**, die den Code in drei logische Module aufteilt:
+MBlock verwendet drei modulare JavaScript-Dateien:
 
-- **`mblock-core.js`** - Base utilities, Validierung, Übersetzungen (384 Zeilen)
-- **`mblock-management.js`** - DOM-Manipulation, Sortable-Handling (1008 Zeilen)  
-- **`mblock-features.js`** - Copy/Paste, Online/Offline Toggle, REDAXO Widgets (815 Zeilen)
-
-Dies verbessert die **Wartbarkeit**, reduziert **Code-Redundanz** und ermöglicht besseres **Debugging**.
+- **`mblock-core.js`** – Utilities, Validierung, Übersetzungen
+- **`mblock-management.js`** – DOM-Manipulation, Sortable-Handling
+- **`mblock-features.js`** – Copy/Paste, Online/Offline Toggle, REDAXO Widgets
 
 ### Build-System
 
-Das Build-System kombiniert automatisch die modularen Dateien und erstellt optimierte Versionen:
-
-#### Voraussetzungen
-
-- **Node.js** (Version 14 oder höher)  
-- **npm** (wird normalerweise mit Node.js installiert)
-
-#### Build-Prozess ausführen
-
-1. **Terminal öffnen** und in das Build-Verzeichnis wechseln:
-   ```bash
-   cd redaxo/src/addons/mblock/build
-   ```
-
-2. **Build-Script ausführen**:
-   ```bash
-   ./build.sh
-   ```
-
-3. **Automatischer Prozess**:
-   - Kombiniert die 3 modularen Dateien zu einer einzigen Datei
-   - Erstellt `mblock-combined.js` (Zwischenergebnis)
-   - Aktualisiert `mblock.js` (Development-Version) 
-   - Erstellt `mblock.min.js` (Production-Version mit Terser-Minifizierung)
-   - Generiert Source Map für Debugging
-
-#### Build-Ausgabe
-```
-� MBlock Build Process gestartet
-═══════════════════════════════════
-✅ Node.js gefunden: v23.9.0
-✅ Dependencies bereits vorhanden
-� Quelldatei gefunden: ../assets/mblock.js
-🔗 Erstelle kombinierte Datei aus modularen Komponenten...
-✅ Kombinierte Datei erstellt: mblock-combined.js
-🔗 Aktualisiere mblock.js für Entwicklungsmodus...
-✅ mblock.js aktualisiert
-⚙️  Starte Minification der kombinierten Datei...
-
-� Minification Statistiken:
-────────────────────────────────────────
-📏 Originalgröße:     105.23 KB
-🗜️  Minified Größe:   36.37 KB  
-💾 Ersparnis:         68.85 KB (65.43%)
-⏱️  Verarbeitungszeit: 238ms
-────────────────────────────────────────
-
-✅ MBlock JavaScript erfolgreich minified!
-🎉 MBlock Build Process abgeschlossen!
+```bash
+cd redaxo/src/addons/mblock/build
+./build.sh
 ```
 
-#### Asset Loading Modi
+Erstellt automatisch:
+- `mblock.js` (Development)
+- `mblock.min.js` (Production, minifiziert mit Terser)
+- Source Map für Debugging
 
-Das System unterstützt verschiedene Asset-Loading Modi (konfigurierbar in `boot.php`):
+**Asset-Loading-Modi** (konfigurierbar in `boot.php`):
 
-```php
-$assetMode = 'auto'; // Options: 'auto', 'modular', 'combined', 'prod'
-```
+| Modus | Verhalten |
+|-------|-----------|
+| `auto` (Standard) | Development → `mblock.js`, Production → `mblock.min.js` |
+| `modular` | 3 separate Dateien (maximales Debugging) |
+| `combined` | Immer `mblock.js` |
+| `prod` | Immer `mblock.min.js` |
 
-- **`auto`** (Standard) - Automatische Erkennung basierend auf Debug-Modus
-  - **Development**: `mblock.js` (kombinierte Datei)
-  - **Production**: `mblock.min.js` (minifiziert)
-  
-- **`modular`** - Lädt 3 separate Dateien (erweiterte Debugging-Möglichkeiten)
-  - `mblock-core.js` → `mblock-management.js` → `mblock-features.js`
-  
-- **`combined`** - Immer kombinierte Datei (`mblock.js`)
-- **`prod`** - Immer minifizierte Datei (`mblock.min.js`)
+### Development Workflow
 
-#### Code-Verbesserungen
-
-Die modulare Architektur bringt folgende **Verbesserungen**:
-
-✅ **Code-Reduktion**: ~200 Zeilen Redundanz eliminiert  
-✅ **Reusable Functions**: `MBlockUtils`, `MBlockClipboard`, `MBlockOnlineToggle`  
-✅ **Unified Event Handling**: Zentralisierte Event-Konfiguration  
-✅ **Better Error Handling**: Konsistente Fehlerbehandlung  
-✅ **Memory Management**: Automatisches Event-Cleanup  
-✅ **Performance**: Cached Selectors und optimierte Algorithmen  
-
-#### Enhanced REX_LINK/REX_MEDIA Support
-
-Das neue System bietet **verbesserte REDAXO Widget-Unterstützung**:
-
-- ✅ **REX_LINK Copy/Paste** - Artikel-IDs und Namen werden korrekt kopiert
-- ✅ **REX_MEDIA Copy/Paste** - Media-Dateien mit Metadaten  
-- ✅ **Widget-Reinitialization** - Onclick-Handler werden automatisch aktualisiert
-- ✅ **Auto Name Fetching** - Artikel-Namen werden automatisch per AJAX geholt
-
-#### Build-System Features
-
-- **🔗 Smart Combining** - Intelligente Kombination der modularen Dateien
-- **⚙️  Advanced Minification** - Terser mit optimierten Settings (2 Compression-Passes)
-- **🗺️  Source Maps** - Für einfaches Debugging der minifizierten Datei
-- **📊 Performance Stats** - Detaillierte Größen- und Kompressions-Statistiken
-- **🔧 Error Handling** - Robuste Fehlerbehandlung und Validierung
-- **♻️  Auto-Update** - Synchronisation zwischen Development- und Production-Dateien
-
-#### Troubleshooting
-
-Falls Probleme auftreten:
-
-1. **Node.js Version prüfen**:
-   ```bash
-   node --version  # sollte >= 14.0.0 sein
-   ```
-
-2. **Dependencies neu installieren**:
-   ```bash
-   cd redaxo/src/addons/mblock/build
-   rm -rf node_modules
-   npm install
-   ```
-
-3. **Modulare Dateien prüfen**:
-   ```bash
-   ls -la ../assets/mblock-*.js
-   # Sollte alle 3 modularen Dateien anzeigen
-   ```
-
-4. **Manuelle Terser Installation**:
-   ```bash
-   npm install terser
-   ```
-
-#### Development Workflow
-
-**Für MBlock-Entwicklung**:
-
-1. **Bearbeite die modularen Dateien**:
-   - `assets/mblock-core.js`
-   - `assets/mblock-management.js` 
-   - `assets/mblock-features.js`
-
-2. **Build ausführen** nach Änderungen:
-   ```bash
-   cd build && ./build.sh
-   ```
-
-3. **Testen** in REDAXO (Debug-Modus nutzt automatisch die Development-Version)
-
-4. **Production-Deploy**: Die minifizierte Version wird automatisch generiert
+1. Bearbeite die modularen Dateien in `assets/`
+2. `cd build && ./build.sh` ausführen
+3. Im REDAXO-Debug-Modus wird automatisch die Development-Version geladen
 
 ---
 
@@ -522,15 +402,9 @@ Falls Probleme auftreten:
 * [REDAXO](http://www.redaxo.org)
 * [FriendsOfREDAXO](https://github.com/FriendsOfREDAXO)
 
-
 ## Credits
 
 **Project Leads**
 
-* [Joachim Dörr](https://github.com/joachimdoerr)  
-* [Thomas Skerbis](https://github.com/skerbis)  
-
-
-
-
-
+* [Joachim Dörr](https://github.com/joachimdoerr)
+* [Thomas Skerbis](https://github.com/skerbis)
