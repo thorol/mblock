@@ -1,5 +1,11 @@
 # MBlock - REDAXO Addon für Modul-Input-Blöcke
 
+## Version 4.6.1 - 2026-05-27
+
+### Bug Fixes
+* **rex_select mit optgroup verursacht TypeError**: In den Select-Replacern werden innerhalb von `optgroup` jetzt nur noch echte `option`-Elemente verarbeitet. Whitespace-Textknoten (`DOMText`) werden ignoriert, dadurch tritt der Crash `Argument #2 ($option) must be of type DOMElement, DOMText given` nicht mehr auf. Siehe [Issue #227](https://github.com/FriendsOfREDAXO/mblock/issues/227), gemeldet von @tbaddade.
+* **Defektes Link-Beispiel repariert**: Die Beispiel-Datei `base2_link_example.ini` enthielt beschädigte/duplizierte Startzeilen und ungültigen PHP-Code. Das Beispiel ist wieder lauffähig.
+
 ## Version 4.6.0 - 2026-05-07
 
 ### Bug Fixes

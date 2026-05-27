@@ -84,8 +84,11 @@ class MBlockFormItemDecorator
                     foreach ($match->childNodes as $child) {
                         switch ($child->nodeName) {
                             case 'optgroup':
-                                foreach ($child->childNodes as $nodeChild)
-                                    self::replaceOptionSelect($match, $nodeChild, $item);
+                                foreach ($child->childNodes as $nodeChild) {
+                                    if ($nodeChild instanceof DOMElement && $nodeChild->nodeName === 'option') {
+                                        self::replaceOptionSelect($match, $nodeChild, $item);
+                                    }
+                                }
                                 break;
                             case 'option':
                                 if (isset($child->tagName)) {
