@@ -181,7 +181,7 @@ class MBlockSystemButtonReplacer
                 foreach ($dom->getElementsByTagName('select') as $child) {
                     if (strpos($child->getAttribute('id'), 'REX_MEDIALIST_SELECT_') !== false) {
                         // replace name
-                        $child->setAttribute('name', str_replace($item->getSystemId(), $item->getId(), $child->getAttribute('name')));
+                        self::replaceSelectNameWithItemId($child, $item);
                         // change id
                         self::replaceId($child, $item);
                         // add options
@@ -315,7 +315,7 @@ class MBlockSystemButtonReplacer
             foreach ($dom->getElementsByTagName('select') as $child) {
                 if (strpos($child->getAttribute('id'), 'REX_LINKLIST_SELECT_') !== false) {
                     // replace name
-                    $child->setAttribute('name', str_replace($item->getSystemId(), $item->getId(), $child->getAttribute('name')));
+                    self::replaceSelectNameWithItemId($child, $item);
                     // replace id
                     self::replaceId($child, $item);
                     // add options
@@ -503,6 +503,31 @@ class MBlockSystemButtonReplacer
     {
         if ($name != '' && preg_match('/\_\d+/', $name, $matches))
             $item->setSystemId(str_replace('_','', $matches[0]));
+    }
+
+    /**
+     * Ersetzt den im Select-Namen enthaltenen System-Identifier robust durch die Item-ID.
+     * Dadurch vermeiden wir Deprecated-Warnungen, wenn getSystemId() noch nicht gesetzt ist.
+     *
+     * @param DOMElement $dom
+     * @param MBlockItem $item
+     */
+    private static function replaceSelectNameWithItemId(DOMElement $dom, MBlockItem $item)
+    {
+        $name = $dom->getAttribute('name');
+        $systemId = $item->getSystemId();
+
+        if (null === $systemId || '' === (string) $systemId) {
+            if (preg_match('/\d+/', $name, $matches)) {
+                $systemId = $matches[0];
+            }
+        }
+
+        if (null === $systemId || '' === (string) $systemId) {
+            return;
+        }
+
+        $dom->setAttribute('name', str_replace((string) $systemId, (string) $item->getId(), $name));
     }
 
     /**

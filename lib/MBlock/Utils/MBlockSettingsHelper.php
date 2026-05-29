@@ -74,6 +74,16 @@ class MBlockSettingsHelper
         $settings['mblock_count'] = MBlockSessionHelper::getCurrentCount();
 
         foreach ($settings as $key => $value) {
+            if (is_array($value)) {
+                $normalized = [];
+                foreach ($value as $entry) {
+                    if (is_scalar($entry) || null === $entry) {
+                        $normalized[] = (string) $entry;
+                    }
+                }
+                $value = implode(',', $normalized);
+            }
+
             if (!$value) {
                 $value = 0;
             }

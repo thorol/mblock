@@ -1,5 +1,11 @@
 # MBlock - REDAXO Addon für Modul-Input-Blöcke
 
+## Version 4.6.2 - 2026-05-30
+
+### Bug Fixes
+* **Warnings bei MForm custom/core Toggle behoben**: Die Replacer-Logik für `REX_MEDIALIST_SELECT_*` und `REX_LINKLIST_SELECT_*` ersetzt den Name-Identifier jetzt null-sicher. Dadurch treten keine PHP-Deprecations mehr auf (`str_replace(): Passing null to parameter #1`) wenn `systemId` in einzelnen Widget-HTML-Varianten noch nicht gesetzt ist.
+* **Settings-Serialisierung gehärtet**: `MBlockSettingsHelper` normalisiert Array-Werte vor dem Rendern der `data-*`-Attribute. Dadurch wird die Warnung `Array to string conversion` vermieden.
+
 ## Version 4.6.1 - 2026-05-27
 
 ### Bug Fixes
