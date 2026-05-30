@@ -412,9 +412,9 @@ function mblock_install_medialist_popup_bridge() {
 }
 
 /**
- * MBlock-only Bridge fuer klassische Media-Popup-Buttons.
- * Faengt den Klick in der Capture-Phase ab und ruft openREXMedia mit der
- * tatsaechlich vorhandenen Feld-ID im selben Widget auf.
+ * MBlock-only Bridge fuer klassische Media-Aktionen.
+ * Faengt Klicks in der Capture-Phase ab und ruft open/view/delete/addREXMedia
+ * mit der tatsaechlich vorhandenen Feld-ID im selben Widget auf.
  */
 function mblock_install_media_popup_bridge() {
     try {
@@ -428,7 +428,7 @@ function mblock_install_media_popup_bridge() {
 
         document.addEventListener('click', function (event) {
             const target = event.target && typeof event.target.closest === 'function'
-                ? event.target.closest('[onclick*="openREXMedia"]')
+                ? event.target.closest('[onclick*="openREXMedia"], [onclick*="viewREXMedia"], [onclick*="deleteREXMedia"], [onclick*="addREXMedia"]')
                 : null;
 
             if (!target) {
@@ -436,7 +436,19 @@ function mblock_install_media_popup_bridge() {
             }
 
             const wrapper = target.closest('.mblock_wrapper');
-            if (!wrapper || typeof window.openREXMedia !== 'function') {
+            if (!wrapper) {
+                return;
+            }
+
+            const onclick = target.getAttribute('onclick') || '';
+            const action = onclick.includes('viewREXMedia')
+                ? 'view'
+                : (onclick.includes('deleteREXMedia') ? 'delete' : (onclick.includes('addREXMedia') ? 'add' : 'open'));
+
+            if ((action === 'open' && typeof window.openREXMedia !== 'function') ||
+                (action === 'view' && typeof window.viewREXMedia !== 'function') ||
+                (action === 'delete' && typeof window.deleteREXMedia !== 'function') ||
+                (action === 'add' && typeof window.addREXMedia !== 'function')) {
                 return;
             }
 
@@ -445,8 +457,6 @@ function mblock_install_media_popup_bridge() {
             if (typeof event.stopImmediatePropagation === 'function') {
                 event.stopImmediatePropagation();
             }
-
-            const onclick = target.getAttribute('onclick') || '';
 
             const findSourceId = function (scopeElement) {
                 if (!scopeElement || typeof scopeElement.querySelector !== 'function') {
@@ -474,7 +484,7 @@ function mblock_install_media_popup_bridge() {
             }
 
             if (!sourceId) {
-                const rawIdMatch = onclick.match(/openREXMedia\(\s*['"]?(\d+)['"]?/);
+                const rawIdMatch = onclick.match(/(?:open|view|delete|add)REXMedia\(\s*['"]?(\d+)['"]?/);
                 if (rawIdMatch) {
                     const rawId = rawIdMatch[1];
                     if (document.getElementById('REX_MEDIA_' + rawId)) {
@@ -489,13 +499,37 @@ function mblock_install_media_popup_bridge() {
                 return;
             }
 
-            let param = '';
-            const paramMatch = onclick.match(/openREXMedia\([^,]+,\s*(['"])(.*?)\1/);
-            if (paramMatch) {
-                param = paramMatch[2];
+            if (action === 'open') {
+                let param = '';
+                const paramMatch = onclick.match(/openREXMedia\([^,]+,\s*(['"])(.*?)\1/);
+                if (paramMatch) {
+                    param = paramMatch[2];
+                }
+                window.openREXMedia(idMatch[1], param);
+                return;
             }
 
-            window.openREXMedia(idMatch[1], param);
+            if (action === 'view') {
+                let viewParam = '';
+                const viewMatch = onclick.match(/viewREXMedia\([^,]+,\s*(['"])(.*?)\1/);
+                if (viewMatch) {
+                    viewParam = viewMatch[2];
+                }
+                window.viewREXMedia(idMatch[1], viewParam);
+                return;
+            }
+
+            if (action === 'add') {
+                let addParam = '';
+                const addMatch = onclick.match(/addREXMedia\([^,]+,\s*(['"])(.*?)\1/);
+                if (addMatch) {
+                    addParam = addMatch[2];
+                }
+                window.addREXMedia(idMatch[1], addParam);
+                return;
+            }
+
+            window.deleteREXMedia(idMatch[1]);
         }, true);
     } catch (error) {
         console.warn('MBlock: Fehler beim Installieren der Media Popup Bridge:', error);
@@ -503,9 +537,9 @@ function mblock_install_media_popup_bridge() {
 }
 
 /**
- * MBlock-only Bridge fuer klassische Link-Popup-Buttons.
- * Faengt den Klick in der Capture-Phase ab und ruft openLinkMap mit der
- * tatsaechlich vorhandenen Feld-ID im selben Widget auf.
+ * MBlock-only Bridge fuer klassische Link-Aktionen.
+ * Faengt Klicks in der Capture-Phase ab und ruft openLinkMap/deleteREXLink
+ * mit der tatsaechlich vorhandenen Feld-ID im selben Widget auf.
  */
 function mblock_install_link_popup_bridge() {
     try {
@@ -519,7 +553,7 @@ function mblock_install_link_popup_bridge() {
 
         document.addEventListener('click', function (event) {
             const target = event.target && typeof event.target.closest === 'function'
-                ? event.target.closest('[onclick*="openLinkMap"]')
+                ? event.target.closest('[onclick*="openLinkMap"], [onclick*="deleteREXLink"]')
                 : null;
 
             if (!target) {
@@ -527,7 +561,7 @@ function mblock_install_link_popup_bridge() {
             }
 
             const wrapper = target.closest('.mblock_wrapper');
-            if (!wrapper || typeof window.openLinkMap !== 'function') {
+            if (!wrapper) {
                 return;
             }
 
@@ -538,6 +572,12 @@ function mblock_install_link_popup_bridge() {
             }
 
             const onclick = target.getAttribute('onclick') || '';
+            const action = onclick.includes('deleteREXLink') ? 'delete' : 'open';
+
+            if ((action === 'open' && typeof window.openLinkMap !== 'function') ||
+                (action === 'delete' && typeof window.deleteREXLink !== 'function')) {
+                return;
+            }
 
             const findSourceId = function (scopeElement) {
                 if (!scopeElement || typeof scopeElement.querySelector !== 'function') {
@@ -565,7 +605,7 @@ function mblock_install_link_popup_bridge() {
             }
 
             if (!sourceId) {
-                const rawIdMatch = onclick.match(/openLinkMap\(\s*['"]REX_LINK_(\d+)['"]/);
+                const rawIdMatch = onclick.match(/(?:openLinkMap\(\s*['"]REX_LINK_|deleteREXLink\(\s*['"]?)(\d+)/);
                 if (rawIdMatch) {
                     const rawId = rawIdMatch[1];
                     if (document.getElementById('REX_LINK_' + rawId)) {
@@ -580,13 +620,17 @@ function mblock_install_link_popup_bridge() {
                 return;
             }
 
-            let param = '';
-            const paramMatch = onclick.match(/openLinkMap\([^,]+,\s*(['"])(.*?)\1/);
-            if (paramMatch) {
-                param = paramMatch[2];
+            if (action === 'open') {
+                let param = '';
+                const paramMatch = onclick.match(/openLinkMap\([^,]+,\s*(['"])(.*?)\1/);
+                if (paramMatch) {
+                    param = paramMatch[2];
+                }
+                window.openLinkMap('REX_LINK_' + idMatch[1], param);
+                return;
             }
 
-            window.openLinkMap('REX_LINK_' + idMatch[1], param);
+            window.deleteREXLink(idMatch[1]);
         }, true);
     } catch (error) {
         console.warn('MBlock: Fehler beim Installieren der Link Popup Bridge:', error);
