@@ -162,9 +162,9 @@ function checkCopyPasteEnabled() {
 }
 
 /**
- * MBlock-only Bridge fuer klassische Linklist-Popup-Buttons.
- * Faengt den Klick in der Capture-Phase ab und ruft openREXLinklist mit der
- * tatsaechlich vorhandenen Feld-ID im selben Widget auf.
+ * MBlock-only Bridge fuer klassische Linklist-Aktionen.
+ * Faengt Klicks in der Capture-Phase ab und ruft open/move/deleteREXLinklist
+ * mit der tatsaechlich vorhandenen Feld-ID im selben Widget auf.
  */
 function mblock_install_linklist_popup_bridge() {
     try {
@@ -178,7 +178,7 @@ function mblock_install_linklist_popup_bridge() {
 
         document.addEventListener('click', function (event) {
             const target = event.target && typeof event.target.closest === 'function'
-                ? event.target.closest('[onclick*="openREXLinklist"]')
+                ? event.target.closest('[onclick*="openREXLinklist"], [onclick*="moveREXLinklist"], [onclick*="deleteREXLinklist"]')
                 : null;
 
             if (!target) {
@@ -192,7 +192,13 @@ function mblock_install_linklist_popup_bridge() {
             }
 
             const onclick = target.getAttribute('onclick') || '';
-            if (typeof window.openREXLinklist !== 'function') {
+            const action = onclick.includes('moveREXLinklist')
+                ? 'move'
+                : (onclick.includes('deleteREXLinklist') ? 'delete' : 'open');
+
+            if ((action === 'open' && typeof window.openREXLinklist !== 'function') ||
+                (action === 'move' && typeof window.moveREXLinklist !== 'function') ||
+                (action === 'delete' && typeof window.deleteREXLinklist !== 'function')) {
                 return;
             }
 
@@ -247,13 +253,27 @@ function mblock_install_linklist_popup_bridge() {
                 return;
             }
 
-            let param = '';
-            const paramMatch = onclick.match(/openREXLinklist\([^,]+,\s*(['"])(.*?)\1/);
-            if (paramMatch) {
-                param = paramMatch[2];
+            if (action === 'open') {
+                let param = '';
+                const paramMatch = onclick.match(/openREXLinklist\([^,]+,\s*(['"])(.*?)\1/);
+                if (paramMatch) {
+                    param = paramMatch[2];
+                }
+                window.openREXLinklist(idMatch[1], param);
+                return;
             }
 
-            window.openREXLinklist(idMatch[1], param);
+            if (action === 'move') {
+                let moveParam = '';
+                const moveMatch = onclick.match(/moveREXLinklist\([^,]+,\s*(['"]?)([^'")]+)\1/);
+                if (moveMatch) {
+                    moveParam = moveMatch[2];
+                }
+                window.moveREXLinklist(idMatch[1], moveParam);
+                return;
+            }
+
+            window.deleteREXLinklist(idMatch[1]);
         }, true);
     } catch (error) {
         console.warn('MBlock: Fehler beim Installieren der Linklist Popup Bridge:', error);
@@ -261,9 +281,9 @@ function mblock_install_linklist_popup_bridge() {
 }
 
 /**
- * MBlock-only Bridge fuer klassische Medialist-Popup-Buttons.
- * Faengt den Klick in der Capture-Phase ab und ruft openREXMedialist mit der
- * tatsaechlich vorhandenen Feld-ID im selben Widget auf.
+ * MBlock-only Bridge fuer klassische Medialist-Aktionen.
+ * Faengt Klicks in der Capture-Phase ab und ruft open/view/move/deleteREXMedialist
+ * mit der tatsaechlich vorhandenen Feld-ID im selben Widget auf.
  */
 function mblock_install_medialist_popup_bridge() {
     try {
@@ -277,7 +297,7 @@ function mblock_install_medialist_popup_bridge() {
 
         document.addEventListener('click', function (event) {
             const target = event.target && typeof event.target.closest === 'function'
-                ? event.target.closest('[onclick*="openREXMedialist"]')
+                ? event.target.closest('[onclick*="openREXMedialist"], [onclick*="viewREXMedialist"], [onclick*="moveREXMedialist"], [onclick*="deleteREXMedialist"]')
                 : null;
 
             if (!target) {
@@ -291,7 +311,14 @@ function mblock_install_medialist_popup_bridge() {
             }
 
             const onclick = target.getAttribute('onclick') || '';
-            if (typeof window.openREXMedialist !== 'function') {
+            const action = onclick.includes('moveREXMedialist')
+                ? 'move'
+                : (onclick.includes('deleteREXMedialist') ? 'delete' : (onclick.includes('viewREXMedialist') ? 'view' : 'open'));
+
+            if ((action === 'open' && typeof window.openREXMedialist !== 'function') ||
+                (action === 'view' && typeof window.viewREXMedialist !== 'function') ||
+                (action === 'move' && typeof window.moveREXMedialist !== 'function') ||
+                (action === 'delete' && typeof window.deleteREXMedialist !== 'function')) {
                 return;
             }
 
@@ -329,7 +356,7 @@ function mblock_install_medialist_popup_bridge() {
             }
 
             if (!sourceId) {
-                const rawIdMatch = onclick.match(/openREXMedialist\(\s*['"]?(\d+)['"]?/);
+                const rawIdMatch = onclick.match(/(?:open|view|move|delete)REXMedialist\(\s*['"]?(\d+)['"]?/);
                 if (rawIdMatch) {
                     const rawId = rawIdMatch[1];
                     const selectExists = !!document.getElementById('REX_MEDIALIST_SELECT_' + rawId);
@@ -347,13 +374,37 @@ function mblock_install_medialist_popup_bridge() {
                 return;
             }
 
-            let param = '';
-            const paramMatch = onclick.match(/openREXMedialist\([^,]+,\s*(['"])(.*?)\1/);
-            if (paramMatch) {
-                param = paramMatch[2];
+            if (action === 'open') {
+                let param = '';
+                const paramMatch = onclick.match(/openREXMedialist\([^,]+,\s*(['"])(.*?)\1/);
+                if (paramMatch) {
+                    param = paramMatch[2];
+                }
+                window.openREXMedialist(idMatch[1], param);
+                return;
             }
 
-            window.openREXMedialist(idMatch[1], param);
+            if (action === 'view') {
+                let viewParam = '';
+                const viewMatch = onclick.match(/viewREXMedialist\([^,]+,\s*(['"])(.*?)\1/);
+                if (viewMatch) {
+                    viewParam = viewMatch[2];
+                }
+                window.viewREXMedialist(idMatch[1], viewParam);
+                return;
+            }
+
+            if (action === 'move') {
+                let moveParam = '';
+                const moveMatch = onclick.match(/moveREXMedialist\([^,]+,\s*(['"]?)([^'")]+)\1/);
+                if (moveMatch) {
+                    moveParam = moveMatch[2];
+                }
+                window.moveREXMedialist(idMatch[1], moveParam);
+                return;
+            }
+
+            window.deleteREXMedialist(idMatch[1]);
         }, true);
     } catch (error) {
         console.warn('MBlock: Fehler beim Installieren der Medialist Popup Bridge:', error);
