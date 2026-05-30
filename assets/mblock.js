@@ -202,12 +202,6 @@ function mblock_install_linklist_popup_bridge() {
                 return;
             }
 
-            event.preventDefault();
-            event.stopPropagation();
-            if (typeof event.stopImmediatePropagation === 'function') {
-                event.stopImmediatePropagation();
-            }
-
             const findSourceId = function (scopeElement) {
                 if (!scopeElement || typeof scopeElement.querySelector !== 'function') {
                     return '';
@@ -222,8 +216,7 @@ function mblock_install_linklist_popup_bridge() {
                 target.closest('.rex-js-widget'),
                 target.closest('.input-group'),
                 target.closest('.form-group'),
-                target.parentElement,
-                wrapper
+                target.parentElement
             ];
 
             let sourceId = '';
@@ -251,6 +244,13 @@ function mblock_install_linklist_popup_bridge() {
             if (!idMatch) {
                 console.warn('MBlock: Keine gueltige Linklist-ID im Widget gefunden.');
                 return;
+            }
+
+            // Erst nach erfolgreicher ID-Ermittlung das native Inline-Handling unterdruecken.
+            event.preventDefault();
+            event.stopPropagation();
+            if (typeof event.stopImmediatePropagation === 'function') {
+                event.stopImmediatePropagation();
             }
 
             if (action === 'open') {
@@ -322,13 +322,6 @@ function mblock_install_medialist_popup_bridge() {
                 return;
             }
 
-            // Den fehlerhaften Inline-onclick innerhalb MBlock immer abfangen.
-            event.preventDefault();
-            event.stopPropagation();
-            if (typeof event.stopImmediatePropagation === 'function') {
-                event.stopImmediatePropagation();
-            }
-
             const findSourceId = function (scopeElement) {
                 if (!scopeElement || typeof scopeElement.querySelector !== 'function') {
                     return '';
@@ -343,8 +336,7 @@ function mblock_install_medialist_popup_bridge() {
                 target.closest('.rex-js-widget'),
                 target.closest('.input-group'),
                 target.closest('.form-group'),
-                target.parentElement,
-                wrapper
+                target.parentElement
             ];
 
             let sourceId = '';
@@ -372,6 +364,13 @@ function mblock_install_medialist_popup_bridge() {
             if (!idMatch) {
                 console.warn('MBlock: Keine gueltige Medialist-ID im Widget gefunden.');
                 return;
+            }
+
+            // Erst nach erfolgreicher ID-Ermittlung das native Inline-Handling unterdruecken.
+            event.preventDefault();
+            event.stopPropagation();
+            if (typeof event.stopImmediatePropagation === 'function') {
+                event.stopImmediatePropagation();
             }
 
             if (action === 'open') {
@@ -452,12 +451,6 @@ function mblock_install_media_popup_bridge() {
                 return;
             }
 
-            event.preventDefault();
-            event.stopPropagation();
-            if (typeof event.stopImmediatePropagation === 'function') {
-                event.stopImmediatePropagation();
-            }
-
             const findSourceId = function (scopeElement) {
                 if (!scopeElement || typeof scopeElement.querySelector !== 'function') {
                     return '';
@@ -471,8 +464,7 @@ function mblock_install_media_popup_bridge() {
                 target.closest('.rex-js-widget'),
                 target.closest('.input-group'),
                 target.closest('.form-group'),
-                target.parentElement,
-                wrapper
+                target.parentElement
             ];
 
             let sourceId = '';
@@ -497,6 +489,13 @@ function mblock_install_media_popup_bridge() {
             if (!idMatch) {
                 console.warn('MBlock: Keine gueltige Media-ID im Widget gefunden.');
                 return;
+            }
+
+            // Erst nach erfolgreicher ID-Ermittlung das native Inline-Handling unterdruecken.
+            event.preventDefault();
+            event.stopPropagation();
+            if (typeof event.stopImmediatePropagation === 'function') {
+                event.stopImmediatePropagation();
             }
 
             if (action === 'open') {
@@ -592,8 +591,7 @@ function mblock_install_link_popup_bridge() {
                 target.closest('.rex-js-widget'),
                 target.closest('.input-group'),
                 target.closest('.form-group'),
-                target.parentElement,
-                wrapper
+                target.parentElement
             ];
 
             let sourceId = '';
@@ -618,6 +616,13 @@ function mblock_install_link_popup_bridge() {
             if (!idMatch) {
                 console.warn('MBlock: Keine gueltige Link-ID im Widget gefunden.');
                 return;
+            }
+
+            // Erst nach erfolgreicher ID-Ermittlung das native Inline-Handling unterdruecken.
+            event.preventDefault();
+            event.stopPropagation();
+            if (typeof event.stopImmediatePropagation === 'function') {
+                event.stopImmediatePropagation();
             }
 
             if (action === 'open') {
